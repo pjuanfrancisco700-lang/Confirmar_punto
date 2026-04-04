@@ -437,7 +437,7 @@
       PEGA AQUÍ TU URL DE APPS SCRIPT
       Ejemplo: const API_URL = 'https://script.google.com/macros/s/XXXXXXXX/exec';
     */
-    const API_URL = 'PEGAR_AQUI_URL_DEL_APPS_SCRIPT';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
     const DEFAULT_GOAL = 10;
     const DEFAULT_REWARD = 'Café gratis';
 
@@ -683,7 +683,7 @@
         return;
       }
 
-      if (API_URL.includes('https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec')) {
+      if (API_URL.includes('PEGAR_AQUI')) {
         state.cliente.puntos = 0;
         state.cliente.premio_disponible = 'NO';
         state.cliente.ultima_visita = new Date().toISOString();
