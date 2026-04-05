@@ -2,42 +2,64 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Confirmar punto</title>
 <style>
-:root{--bg:#f6f2ec;--card:rgba(255,255,255,.85);--text:#2a211c;--muted:#7a6d65;--line:rgba(60,40,25,.08);--accent:#6f4e37;--success:#6e9368;--danger:#b85d5d;--radius:22px;--maxw:420px}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+:root{--bg:#f6f2ec;--card:rgba(255,255,255,.88);--text:#2a211c;--muted:#7a6d65;--line:rgba(60,40,25,.08);--accent:#C8A27C;--success:#6e9368;--danger:#b85d5d;--radius:22px;--maxw:420px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--text);touch-action:manipulation;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
 body{display:flex;justify-content:center;align-items:center}
 .shell{width:100%;max-width:var(--maxw)}
-.phone{height:100vh;max-height:800px;border-radius:30px;overflow:hidden;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.1)}
-.screen{display:flex;flex-direction:column;height:100%;padding:14px;gap:10px}
+.phone{height:100vh;max-height:800px;border-radius:30px;overflow:hidden;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.1);position:relative}
+.screen{display:flex;flex-direction:column;height:100%;padding:12px;gap:8px}
+
+/* top */
 .topbar{display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;gap:8px;align-items:center;font-weight:700}
-.icon-btn{border:none;background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer}
-.hero{padding:12px;border-radius:var(--radius);background:var(--card)}
-.hero h1{font-size:20px;margin:0}
-.meta{display:flex;gap:6px;margin-top:6px;font-size:11px;color:var(--muted)}
-.progress{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:var(--radius);background:var(--card)}
+.icon-btn{border:none;background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer;transition:.15s}
+.icon-btn:active{transform:scale(.92)}
+
+/* hero */
+.hero{padding:10px;border-radius:var(--radius);background:var(--card)}
+.hero h1{font-size:18px;margin:0}
+.meta{display:flex;gap:6px;margin-top:4px;font-size:10px;color:var(--muted)}
+
+/* progress */
+.progress{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:var(--radius);background:var(--card)}
 .progress-top{display:flex;justify-content:space-between;align-items:center}
-.points{font-size:18px;font-weight:700}
-.cups{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.cup{font-size:14px;border-radius:10px;background:#eee;display:grid;place-items:center;padding:6px}
-.cup.filled{background:#6f4e37;color:#fff}
-.action{display:flex;gap:6px;padding:10px;border-radius:var(--radius);background:var(--card)}
-.action input{flex:1;padding:10px;border-radius:12px;border:1px solid #ddd}
-.action button{border:none;border-radius:12px;padding:10px 12px;background:#6f4e37;color:#fff;font-weight:600}
+.points{font-size:16px;font-weight:700}
+.cups{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.cup{font-size:12px;border-radius:8px;background:#eee;display:grid;place-items:center;padding:5px;transition:.2s}
+.cup.filled{background:#C8A27C;color:#fff;transform:translateY(-1px)}
+
+/* action */
+.action{display:flex;gap:6px;padding:8px;border-radius:var(--radius);background:var(--card)}
+.action input{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd;font-size:14px}
+.action button{border:none;border-radius:10px;padding:8px 10px;background:#C8A27C;color:#fff;font-weight:600;transition:.15s}
+.action button:active{transform:scale(.92)}
 .secondary{background:#6e9368}
-.summary{display:grid;grid-template-columns:1fr 1fr 1fr;padding:10px;border-radius:var(--radius);background:var(--card);font-size:11px;text-align:center}
-.summary div{display:flex;flex-direction:column}
-.summary strong{font-size:12px}
-.status{font-size:11px;text-align:center;color:var(--muted)}
+
+/* summary */
+.summary{display:grid;grid-template-columns:1fr 1fr 1fr;padding:8px;border-radius:var(--radius);background:var(--card);font-size:10px;text-align:center}
+.summary strong{font-size:11px}
+
+/* status */
+.status{font-size:10px;text-align:center;color:var(--muted);min-height:12px}
 .hidden{display:none}
+
+/* loading overlay */
+.loader{position:absolute;inset:0;background:rgba(255,255,255,.6);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center}
+.loader.active{display:flex}
+.spinner{width:26px;height:26px;border:3px solid #ddd;border-top:3px solid #C8A27C;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <div class="shell">
 <div class="phone">
+
+<div class="loader" id="loader"><div class="spinner"></div></div>
+
 <div id="appView" class="screen">
 
 <div class="topbar">
@@ -82,8 +104,11 @@ body{display:flex;justify-content:center;align-items:center}
 <script>
 const API_URL='https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
 const state={id:null,cliente:null,metaPuntos:10,recompensa:'Café gratis'};
+const loader=document.getElementById('loader');
 
+function showLoader(v){loader.classList.toggle('active',v)}
 function qs(n){return new URLSearchParams(window.location.search).get(n)}
+
 function renderCups(p){const g=document.getElementById('cupsGrid');g.innerHTML='';for(let i=1;i<=10;i++){let d=document.createElement('div');d.className='cup'+(i<=p?' filled':'');d.textContent='☕';g.appendChild(d)}}
 
 function render(){const c=state.cliente;if(!c)return;
@@ -96,7 +121,7 @@ document.getElementById('pointsCount').textContent=p;
 document.getElementById('goalCount').textContent=state.metaPuntos;
 document.getElementById('ultimaVisita').textContent=new Date(c.ultima_visita||Date.now()).toLocaleDateString();
 document.getElementById('premioEstado').textContent=premio?'Disponible':'Sin premio';
-document.getElementById('faltanText').textContent=premio?'Listo para canjear':`Faltan ${state.metaPuntos-p}`;
+document.getElementById('faltanText').textContent=premio?'Listo':`Faltan ${state.metaPuntos-p}`;
 document.getElementById('btnCanjear').classList.toggle('hidden',!premio);
 renderCups(p);
 }
@@ -105,19 +130,23 @@ async function apiGet(p){const r=await fetch(API_URL+'?'+new URLSearchParams(p))
 async function apiPost(p){const f=new URLSearchParams();Object.keys(p).forEach(k=>f.append(k,p[k]));const r=await fetch(API_URL,{method:'POST',body:f});return r.json()}
 
 async function load(){state.id=qs('id');if(!state.id){document.getElementById('statusBox').textContent='QR inválido';return}
-try{const d=await apiGet({action:'getClient',id:state.id});if(!d.ok)throw new Error();state.cliente=d.cliente;render()}catch(e){document.getElementById('statusBox').textContent='Error cargando cliente';}}
+try{showLoader(true);const d=await apiGet({action:'getClient',id:state.id});if(!d.ok)throw new Error();state.cliente=d.cliente;render()}catch(e){document.getElementById('statusBox').textContent='Error cargando cliente'}finally{showLoader(false)}}
 
-async function confirm(){const pin=document.getElementById('pinInput').value.trim();if(!pin)return alert('PIN requerido');
-const d=await apiPost({action:'confirmPoint',id:state.id,pin});if(!d.ok)return alert(d.message);
-state.cliente=d.cliente;render();document.getElementById('pinInput').value='';}
+async function confirm(){const pin=document.getElementById('pinInput').value.trim();if(!pin)return;
+try{showLoader(true);const d=await apiPost({action:'confirmPoint',id:state.id,pin});if(!d.ok)throw new Error(d.message);
+state.cliente=d.cliente;render();document.getElementById('statusBox').textContent='Punto agregado';}catch(e){document.getElementById('statusBox').textContent=e.message||'Error';}
+finally{showLoader(false);document.getElementById('pinInput').value='';}}
 
-async function canjear(){const pin=document.getElementById('pinInput').value.trim();if(!pin)return alert('PIN requerido');
-const d=await apiPost({action:'redeemReward',id:state.id,pin});if(!d.ok)return alert(d.message);
-await load();document.getElementById('pinInput').value='';}
+async function canjear(){const pin=document.getElementById('pinInput').value.trim();if(!pin)return;
+try{showLoader(true);const d=await apiPost({action:'redeemReward',id:state.id,pin});if(!d.ok)throw new Error(d.message);
+await load();document.getElementById('statusBox').textContent='Canjeado';}catch(e){document.getElementById('statusBox').textContent=e.message||'Error';}
+finally{showLoader(false);document.getElementById('pinInput').value='';}}
 
+// UX mejoras
 document.getElementById('btnConfirmar').onclick=confirm;
 document.getElementById('btnCanjear').onclick=canjear;
 document.getElementById('btnRecargar').onclick=load;
+document.getElementById('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')confirm()});
 
 load();
 </script>
