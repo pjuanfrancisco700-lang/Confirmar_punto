@@ -499,7 +499,7 @@
     function renderCups(points, goal) {
       const cupsGrid = document.getElementById('cupsGrid');
       cupsGrid.innerHTML = '';
-      const total = Math.max(goal, 10);
+      const total = Math.max(Number(goal) || 1, 1);
       for (let i = 1; i <= total; i++) {
         const item = document.createElement('div');
         item.className = `cup ${i <= points ? 'filled' : ''}`;
@@ -595,7 +595,14 @@
         const data = await apiGet({ action: 'getClient', id: state.id });
         if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
         state.cliente = data.cliente;
-        state.metaPuntos = Number(data.cliente.meta_puntos || 0);
+        state.metaPuntos = Number(
+  data.meta_puntos ||
+  data.metaPuntos ||
+  data.cliente?.meta_puntos ||
+  data.cliente?.metaPuntos ||
+  data.cliente?.meta ||
+  10
+);
         renderCliente();
         showApp();
       } catch (error) {
