@@ -11,7 +11,11 @@ html,body{margin:0;height:100%;font-family:-apple-system,system-ui,sans-serif;ba
 body{display:flex;justify-content:center;align-items:center}
 .shell{width:100%;max-width:var(--maxw)}
 .phone{height:100vh;max-height:800px;border-radius:30px;overflow:hidden;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.1);position:relative}
-.screen{display:flex;flex-direction:column;height:100%;padding:12px;gap:8px}
+.screen{display:flex;flex-direction:column;height:100%;padding:12px}
+
+.top-section{display:flex;flex-direction:column;gap:8px}
+.middle-section{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.bottom-section{display:flex;flex-direction:column;gap:6px;margin-top:auto}
 
 /* top */
 .topbar{display:flex;justify-content:space-between;align-items:center}
@@ -62,6 +66,8 @@ body{display:flex;justify-content:center;align-items:center}
 
 <div id="appView" class="screen">
 
+<div class="top-section">
+
 <div class="topbar">
 <div class="brand">☕ <span id="negocioNombre">Café Urbano</span></div>
 <button class="icon-btn" id="btnRecargar">↻</button>
@@ -83,12 +89,17 @@ body{display:flex;justify-content:center;align-items:center}
 <div class="cups" id="cupsGrid"></div>
 </div>
 
+</div>
+
+<div class="middle-section">
 <div class="action">
 <input id="pinInput" placeholder="PIN" maxlength="6">
 <button id="btnConfirmar">OK</button>
 <button id="btnCanjear" class="secondary hidden">🎁</button>
 </div>
+</div>
 
+<div class="bottom-section">
 <div class="summary">
 <div><span>Visita</span><strong id="ultimaVisita">—</strong></div>
 <div><span>Premio</span><strong id="premioEstado">—</strong></div>
@@ -96,6 +107,9 @@ body{display:flex;justify-content:center;align-items:center}
 </div>
 
 <div class="status" id="statusBox"></div>
+</div>
+
+</div>
 
 </div>
 </div>
