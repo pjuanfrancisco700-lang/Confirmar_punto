@@ -712,6 +712,7 @@
         : `Faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'}.`;
 
       btnCanjear.classList.toggle('hidden', !premioDisponible);
+      btnConfirmar.classList.toggle('hidden', premioDisponible);
 
       if (premioDisponible) {
         btnCanjear.classList.add('btn-reward');
