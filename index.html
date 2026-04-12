@@ -734,18 +734,18 @@
     }
 
     async function apiPost(payload) {
-  const form = new URLSearchParams();
-  Object.keys(payload).forEach(key => {
-    form.append(key, payload[key] ?? '');
-  });
+      const form = new URLSearchParams();
+      Object.keys(payload).forEach(key => {
+        form.append(key, payload[key] ?? '');
+      });
 
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: form
-  });
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: form
+      });
 
-  return res.json();
-}
+      return res.json();
+    }
 
     async function loadClient() {
       state.id = qs('id');
@@ -785,13 +785,13 @@
         if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
         state.cliente = data.cliente;
         state.metaPuntos = Number(
-  data.meta_puntos ||
-  data.metaPuntos ||
-  data.cliente?.meta_puntos ||
-  data.cliente?.metaPuntos ||
-  data.cliente?.meta ||
-  10
-);
+          data.meta_puntos ||
+          data.metaPuntos ||
+          data.cliente?.meta_puntos ||
+          data.cliente?.metaPuntos ||
+          data.cliente?.meta ||
+          10
+        );
         renderCliente();
         showApp();
       } catch (error) {
@@ -839,9 +839,12 @@
         state.cliente.ultima_visita = new Date().toISOString();
         renderCliente();
         pinInput.value = '';
-        showStatus(state.cliente.premio_disponible === 'SI'
-          ? 'Modo demo: punto agregado. El cliente ya tiene recompensa disponible.'
-          : 'Modo demo: punto agregado correctamente.', 'ok');
+        showStatus(
+          state.cliente.premio_disponible === 'SI'
+            ? 'Modo demo: punto agregado. El cliente ya tiene recompensa disponible.'
+            : 'Modo demo: punto agregado correctamente.',
+          'ok'
+        );
         return;
       }
 
