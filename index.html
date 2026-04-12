@@ -552,6 +552,30 @@
       appView.classList.remove('hidden');
     }
 
+    function applyServerData(data) {
+      state.metaPuntos = Number(
+        data?.meta_puntos ??
+        data?.metaPuntos ??
+        data?.cliente?.meta_puntos ??
+        data?.cliente?.metaPuntos ??
+        data?.cliente?.meta ??
+        state.metaPuntos ??
+        10
+      );
+
+      state.recompensa = String(
+        data?.recompensa ??
+        state.recompensa ??
+        DEFAULT_REWARD
+      ).trim();
+
+      state.negocio = String(
+        data?.nombre_negocio ??
+        state.negocio ??
+        'Panel de validación'
+      ).trim();
+    }
+
     function renderCups(points, goal) {
       const cupsGrid = document.getElementById('cupsGrid');
       cupsGrid.innerHTML = '';
@@ -639,6 +663,9 @@
           qr_id: state.id,
           estado: 'ACTIVO'
         };
+        state.metaPuntos = 5;
+        state.recompensa = 'Recompensa';
+        state.negocio = 'Panel de validación';
         renderCliente();
         showApp();
         showStatus('Modo demo activo.', 'info');
@@ -648,15 +675,10 @@
       try {
         const data = await apiGet({ action: 'getClient', id: state.id });
         if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
+
         state.cliente = data.cliente;
-        state.metaPuntos = Number(
-          data.meta_puntos ||
-          data.metaPuntos ||
-          data.cliente?.meta_puntos ||
-          data.cliente?.metaPuntos ||
-          data.cliente?.meta ||
-          10
-        );
+        applyServerData(data);
+
         renderCliente();
         showApp();
       } catch (error) {
@@ -671,14 +693,19 @@
 
     async function refreshClient() {
       hideStatus();
+
       if (!state.id || API_URL.includes('PEGAR_AQUI')) {
         renderCliente();
         return;
       }
+
       try {
         const data = await apiGet({ action: 'getClient', id: state.id });
         if (!data.ok) throw new Error(data.message || 'No se pudo actualizar');
+
         state.cliente = data.cliente;
+        applyServerData(data);
+
         renderCliente();
       } catch (error) {
         showStatus(error.message || 'No se pudo actualizar.', 'error');
@@ -702,15 +729,19 @@
         state.cliente.ultima_visita = new Date().toISOString();
         renderCliente();
         pinInput.value = '';
-        showStatus(state.cliente.premio_disponible === 'SI'
-          ? 'Punto agregado. Recompensa disponible.'
-          : 'Punto agregado.', 'ok');
+        showStatus(
+          state.cliente.premio_disponible === 'SI'
+            ? 'Punto agregado. Recompensa disponible.'
+            : 'Punto agregado.',
+          'ok'
+        );
         return;
       }
 
       try {
         btnConfirmar.disabled = true;
         btnConfirmar.textContent = 'Guardando...';
+
         const data = await apiPost({
           action: 'confirmPoint',
           id: state.id,
@@ -723,8 +754,10 @@
         state.cliente = {
           ...state.cliente,
           ...data.cliente,
-          ultima_visita: new Date().toISOString()
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
         };
+        applyServerData(data);
+
         renderCliente();
         pinInput.value = '';
         showStatus(data.message || 'Punto agregado.', 'ok');
@@ -760,6 +793,7 @@
       try {
         btnCanjear.disabled = true;
         btnCanjear.textContent = 'Canjeando...';
+
         const data = await apiPost({
           action: 'redeemReward',
           id: state.id,
@@ -769,7 +803,14 @@
 
         if (!data.ok) throw new Error(data.message || 'No se pudo canjear la recompensa');
 
-        await refreshClient();
+        state.cliente = {
+          ...state.cliente,
+          ...data.cliente,
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
+        };
+        applyServerData(data);
+
+        renderCliente();
         pinInput.value = '';
         showStatus(data.message || 'Recompensa canjeada.', 'ok');
       } catch (error) {
