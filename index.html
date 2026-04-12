@@ -466,15 +466,6 @@
               <span class="info-label">Premio</span>
               <span class="info-value" id="premioEstado">Sin premio</span>
             </div>
-            <div class="info-row">
-              <span class="info-label">Usuario</span>
-              <span class="info-value" id="usuarioMostradorLabel">Caja 1</span>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="usuarioInput">Usuario</label>
-            <input id="usuarioInput" type="text" value="Caja 1" placeholder="Caja 1" style="letter-spacing: normal; font-size: 15px;" />
           </div>
 
           <div class="field">
@@ -515,7 +506,6 @@
     const btnCanjear = document.getElementById('btnCanjear');
     const statusBox = document.getElementById('statusBox');
     const pinInput = document.getElementById('pinInput');
-    const usuarioInput = document.getElementById('usuarioInput');
 
     const state = {
       id: null,
@@ -590,7 +580,6 @@
       document.getElementById('goalCount').textContent = state.metaPuntos;
       document.getElementById('ultimaVisita').textContent = formatDate(c.ultima_visita);
       document.getElementById('premioEstado').textContent = premioDisponible ? `${state.recompensa} disponible` : 'Sin premio';
-      document.getElementById('usuarioMostradorLabel').textContent = safeText(usuarioInput.value, 'Caja 1');
 
       document.getElementById('heroMsg').textContent = premioDisponible
         ? 'Recompensa disponible.'
@@ -699,8 +688,7 @@
     async function confirmPoint() {
       hideStatus();
       const pin = pinInput.value.trim();
-      const usuario = usuarioInput.value.trim() || 'Caja 1';
-      document.getElementById('usuarioMostradorLabel').textContent = usuario;
+      const usuario = 'Caja 1';
 
       if (!pin) {
         showStatus('Ingresa el PIN.', 'error');
@@ -751,8 +739,7 @@
     async function redeemReward() {
       hideStatus();
       const pin = pinInput.value.trim();
-      const usuario = usuarioInput.value.trim() || 'Caja 1';
-      document.getElementById('usuarioMostradorLabel').textContent = usuario;
+      const usuario = 'Caja 1';
 
       if (!pin) {
         showStatus('Ingresa el PIN.', 'error');
@@ -797,10 +784,6 @@
       const isPassword = pinInput.type === 'password';
       pinInput.type = isPassword ? 'text' : 'password';
       btnVerPin.textContent = isPassword ? 'Ocultar' : 'Ver';
-    });
-
-    usuarioInput.addEventListener('input', () => {
-      document.getElementById('usuarioMostradorLabel').textContent = safeText(usuarioInput.value, 'Caja 1');
     });
 
     btnRecargar.addEventListener('click', refreshClient);
