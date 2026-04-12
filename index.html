@@ -2,40 +2,73 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta name="color-scheme" content="light only" />
   <title>Confirmar punto</title>
   <style>
     :root {
-      --bg: #f6f2ec;
-      --card: rgba(255,255,255,0.82);
-      --text: #2a211c;
-      --muted: #7a6d65;
-      --line: rgba(60,40,25,0.08);
+      --bg: #f5f1eb;
+      --bg-soft: #fbf8f4;
+      --surface: rgba(255,255,255,0.92);
+      --surface-strong: rgba(255,255,255,0.98);
+      --surface-soft: rgba(250,246,241,0.95);
+      --text: #1f1915;
+      --text-soft: #6e6259;
+      --line: rgba(73, 54, 39, 0.09);
+      --line-strong: rgba(73, 54, 39, 0.14);
       --accent: #6f4e37;
-      --success: #6e9368;
-      --danger: #b85d5d;
-      --shadow: 0 18px 40px rgba(42,33,28,0.08);
+      --accent-2: #8a684f;
+      --success: #6c8f66;
+      --danger: #b35d5d;
+      --shadow-sm: 0 8px 20px rgba(34, 24, 18, 0.05);
+      --shadow-md: 0 14px 32px rgba(34, 24, 18, 0.08);
+      --shadow-lg: 0 24px 56px rgba(34, 24, 18, 0.10);
       --radius-xl: 28px;
       --radius-lg: 22px;
-      --radius-md: 16px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
       --maxw: 440px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    html, body {
+    html {
       margin: 0;
       padding: 0;
       min-height: 100%;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at top, #fff8f1 0%, var(--bg) 48%, #efe7de 100%);
+      color-scheme: light;
+      background:
+        radial-gradient(circle at top, #fffdf9 0%, #f8f3ed 36%, #f0e8df 100%);
     }
 
     body {
+      margin: 0;
+      padding: 14px 12px 24px;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 18px 14px 32px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, #fffdf9 0%, #f8f3ed 36%, #f0e8df 100%);
+      overflow-x: hidden;
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html, body {
+        color-scheme: light;
+        background:
+          radial-gradient(circle at top, #fffdf9 0%, #f8f3ed 36%, #f0e8df 100%) !important;
+        color: var(--text) !important;
+      }
     }
 
     .shell {
@@ -44,27 +77,47 @@
     }
 
     .phone {
-      min-height: calc(100vh - 36px);
-      border-radius: 34px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.5) 100%);
-      border: 1px solid rgba(255,255,255,0.7);
-      box-shadow: 0 24px 70px rgba(42,33,28,0.1);
-      backdrop-filter: blur(18px);
+      min-height: calc(100vh - 28px);
+      position: relative;
       overflow: hidden;
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.90) 0%, rgba(248,243,237,0.88) 100%);
+      border: 1px solid rgba(255,255,255,0.92);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(20px);
+      isolation: isolate;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.85), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(255,255,255,0.45), transparent 28%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .screen,
+    .loading {
+      position: relative;
+      z-index: 1;
     }
 
     .screen {
-      padding: 18px;
-      padding-bottom: 28px;
+      padding: 14px;
+      padding-bottom: 20px;
       display: grid;
-      gap: 14px;
+      gap: 10px;
     }
 
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 2px;
     }
 
@@ -72,133 +125,177 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      min-width: 0;
+      font-weight: 800;
+      letter-spacing: -0.04em;
     }
 
     .brand-badge,
     .icon-btn {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
       display: grid;
       place-items: center;
       border-radius: 14px;
-      background: rgba(255,255,255,0.68);
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,241,234,0.95));
       border: 1px solid var(--line);
-      box-shadow: 0 8px 16px rgba(42,33,28,0.05);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-badge {
+      font-size: 18px;
+    }
+
+    .brand #negocioNombre {
+      min-width: 0;
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .icon-btn {
-      border: none;
+      border: 1px solid var(--line);
       cursor: pointer;
       font-size: 17px;
       color: var(--text);
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .icon-btn:hover,
+    .ghost-btn:hover,
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-1px);
     }
 
     .card {
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.82);
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.95);
       border-radius: var(--radius-xl);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
+      padding: 15px;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(18px);
     }
 
     .hero {
-      background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(247,240,232,0.84));
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.97), rgba(247,241,234,0.94));
     }
 
     .eyebrow {
-      color: var(--muted);
+      margin: 0 0 8px;
+      color: var(--text-soft);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-size: 12px;
-      margin: 0 0 10px;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 800;
     }
 
-    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3, p {
+      margin: 0;
+    }
 
     .hero h1 {
-      font-size: 30px;
+      font-size: 27px;
       line-height: 1.02;
-      letter-spacing: -0.06em;
+      letter-spacing: -0.065em;
+      word-break: break-word;
     }
 
     .hero p {
-      color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.5;
-      font-size: 14px;
+      color: var(--text-soft);
+      margin-top: 8px;
+      line-height: 1.4;
+      font-size: 13px;
     }
 
     .meta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 7px;
+      margin-top: 11px;
     }
 
     .tiny-pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 11px;
+      min-height: 30px;
+      padding: 7px 10px;
       border-radius: 999px;
       font-size: 11px;
-      color: var(--muted);
-      background: rgba(255,255,255,0.72);
+      font-weight: 700;
+      color: var(--text-soft);
+      background: rgba(255,255,255,0.92);
       border: 1px solid var(--line);
+      box-shadow: 0 4px 10px rgba(34,24,18,0.03);
     }
 
     .progress-head {
       display: flex;
-      align-items: end;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 12px;
     }
 
     .progress-head h2 {
-      font-size: 20px;
-      letter-spacing: -0.04em;
+      font-size: 18px;
+      letter-spacing: -0.05em;
+      line-height: 1.05;
+    }
+
+    .progress-head p {
+      margin-top: 5px;
+      color: var(--text-soft);
+      font-size: 12px !important;
+      line-height: 1.35;
     }
 
     .big-points {
-      color: var(--muted);
-      font-size: 16px;
+      color: var(--text-soft);
+      font-size: 14px;
+      white-space: nowrap;
+      padding-left: 8px;
     }
 
     .big-points strong {
       color: var(--text);
-      font-size: 26px;
-      letter-spacing: -0.05em;
+      font-size: 24px;
+      letter-spacing: -0.06em;
     }
 
     .cups {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      gap: 8px;
     }
 
     .cup {
       aspect-ratio: 1;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.72);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,239,232,0.95));
       border: 1px solid var(--line);
       display: grid;
       place-items: center;
-      font-size: 22px;
+      font-size: 20px;
+      color: #b59b85;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+      transition: transform .16s ease, box-shadow .16s ease;
     }
 
     .cup.filled {
-      background: linear-gradient(180deg, #7d5a42, #5f4331);
-      color: #fff7ef;
-      border-color: rgba(95,67,49,0.42);
+      background: linear-gradient(180deg, #89654b 0%, #6f4e37 100%);
+      color: #fff8f1;
+      border-color: rgba(111,78,55,0.34);
+      box-shadow: 0 10px 18px rgba(111,78,55,0.18);
     }
 
     .info-grid {
       display: grid;
-      gap: 12px;
+      gap: 0;
     }
 
     .info-row {
@@ -206,82 +303,132 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 12px 0;
+      padding: 11px 0;
       border-top: 1px solid var(--line);
     }
 
-    .info-row:first-child { border-top: none; padding-top: 0; }
-    .info-label { color: var(--muted); font-size: 13px; }
-    .info-value { font-weight: 700; text-align: right; }
+    .info-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .info-row:last-child {
+      padding-bottom: 2px;
+    }
+
+    .info-label {
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .info-value {
+      font-weight: 800;
+      text-align: right;
+      font-size: 13px;
+      line-height: 1.3;
+      max-width: 60%;
+      word-break: break-word;
+    }
 
     .field {
       display: grid;
-      gap: 8px;
-      margin-top: 16px;
+      gap: 6px;
+      margin-top: 13px;
     }
 
     .field label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #5d4d42;
+      font-size: 12px;
+      font-weight: 800;
+      color: #5e5148;
+      letter-spacing: -0.02em;
     }
 
     .pin-wrap {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 10px;
+      gap: 8px;
+      align-items: stretch;
     }
 
     .field input {
       width: 100%;
-      border: 1px solid rgba(60,40,25,0.09);
-      background: rgba(255,255,255,0.92);
+      min-height: 48px;
+      border: 1px solid rgba(73,54,39,0.10);
+      background: rgba(255,255,255,0.96);
       border-radius: 16px;
-      padding: 15px 14px;
-      font-size: 18px;
-      letter-spacing: 0.2em;
+      padding: 13px 14px;
+      font-size: 16px;
       outline: none;
       color: var(--text);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .field input::placeholder {
+      color: #a09084;
     }
 
     .field input:focus {
-      border-color: rgba(111,78,55,0.36);
+      border-color: rgba(111,78,55,0.30);
       box-shadow: 0 0 0 4px rgba(111,78,55,0.08);
+      background: #fff;
+    }
+
+    #usuarioInput {
+      letter-spacing: normal !important;
+      font-size: 15px !important;
+    }
+
+    #pinInput {
+      letter-spacing: 0.16em;
+      font-size: 17px;
     }
 
     .ghost-btn,
     .primary-btn,
     .secondary-btn {
       width: 100%;
+      min-height: 48px;
       border: none;
-      border-radius: 18px;
-      padding: 15px 16px;
-      font-size: 16px;
+      border-radius: 17px;
+      padding: 13px 15px;
+      font-size: 15px;
       font-weight: 800;
       letter-spacing: -0.02em;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease, background .16s ease;
     }
 
     .primary-btn {
-      background: linear-gradient(180deg, #7b5b44, #5f4331);
+      background: linear-gradient(180deg, #7d5d45 0%, #674936 100%);
       color: #fffaf5;
-      box-shadow: 0 18px 30px rgba(111,78,55,0.22);
+      box-shadow: 0 14px 24px rgba(111,78,55,0.18);
     }
 
     .secondary-btn {
-      background: linear-gradient(180deg, #89a57d, #6e9368);
-      color: #f9fff8;
-      box-shadow: 0 18px 30px rgba(110,147,104,0.2);
+      background: linear-gradient(180deg, #7fa276 0%, #6c8f66 100%);
+      color: #fbfffb;
+      box-shadow: 0 14px 24px rgba(108,143,102,0.17);
     }
 
     .ghost-btn {
       width: auto;
-      min-width: 54px;
-      background: rgba(255,255,255,0.75);
+      min-width: 62px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,241,235,0.96));
       color: var(--text);
       border: 1px solid var(--line);
-      padding-inline: 16px;
+      padding-inline: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .ghost-btn:disabled,
+    .primary-btn:disabled,
+    .secondary-btn:disabled,
+    .icon-btn:disabled {
+      opacity: 0.72;
+      cursor: default;
+      transform: none;
     }
 
     .ghost-btn:active,
@@ -292,60 +439,133 @@
     }
 
     .status-box {
-      border-radius: 18px;
-      padding: 14px 15px;
-      font-size: 14px;
-      line-height: 1.45;
+      border-radius: 16px;
+      padding: 12px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
       border: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
     }
 
     .status-box.info {
       background: rgba(111,78,55,0.08);
       color: var(--accent);
-      border-color: rgba(111,78,55,0.1);
+      border-color: rgba(111,78,55,0.10);
     }
 
     .status-box.ok {
-      background: rgba(110,147,104,0.1);
+      background: rgba(108,143,102,0.10);
       color: var(--success);
-      border-color: rgba(110,147,104,0.14);
+      border-color: rgba(108,143,102,0.13);
     }
 
     .status-box.error {
-      background: rgba(184,93,93,0.1);
+      background: rgba(179,93,93,0.10);
       color: var(--danger);
-      border-color: rgba(184,93,93,0.14);
+      border-color: rgba(179,93,93,0.13);
     }
 
-    .status-hidden { display: none; }
-    .hidden { display: none !important; }
+    .status-hidden {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     .split-actions {
       display: grid;
-      gap: 10px;
+      gap: 8px;
+      margin-top: 14px !important;
     }
 
     .center-note {
       text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
+      color: var(--text-soft);
+      font-size: 11px;
+      line-height: 1.4;
+      padding: 0 6px;
     }
 
     .loading {
-      min-height: calc(100vh - 36px);
+      min-height: calc(100vh - 28px);
       display: grid;
       place-items: center;
-      padding: 28px;
+      padding: 22px;
       text-align: center;
-      color: var(--muted);
+      color: var(--text-soft);
+    }
+
+    .loading-card {
+      width: 100%;
+      max-width: 280px;
+      padding: 22px 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,241,234,0.94));
+      border: 1px solid rgba(255,255,255,0.95);
+      box-shadow: var(--shadow-md);
+    }
+
+    .loading-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 12px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,240,234,0.94));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      font-size: 26px;
+    }
+
+    .loading strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: -0.04em;
+    }
+
+    .loading p {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
     @media (max-width: 380px) {
-      .hero h1 { font-size: 27px; }
-      .screen { padding: 15px; }
-      .cups { gap: 8px; }
-      .cup { border-radius: 15px; font-size: 19px; }
+      body {
+        padding: 10px 8px 18px;
+      }
+
+      .phone {
+        border-radius: 28px;
+      }
+
+      .screen {
+        padding: 12px;
+        gap: 9px;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+
+      .cups {
+        gap: 7px;
+      }
+
+      .cup {
+        border-radius: 14px;
+        font-size: 18px;
+      }
+
+      .brand-badge,
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+      }
     }
   </style>
 </head>
@@ -353,10 +573,10 @@
   <div class="shell">
     <div class="phone">
       <div id="loadingView" class="loading">
-        <div>
-          <div style="font-size:34px; margin-bottom:12px;">☕</div>
-          <strong style="display:block; color: var(--text); font-size: 19px; letter-spacing:-0.04em;">Cargando cliente</strong>
-          <p style="margin-top:8px;">Estamos preparando la confirmación del punto.</p>
+        <div class="loading-card">
+          <div class="loading-icon">☕</div>
+          <strong>Cargando</strong>
+          <p>Preparando datos del cliente.</p>
         </div>
       </div>
 
@@ -366,13 +586,13 @@
             <div class="brand-badge">☕</div>
             <div id="negocioNombre">Café Urbano</div>
           </div>
-          <button class="icon-btn" id="btnRecargar" title="Recargar">↻</button>
+          <button class="icon-btn" id="btnRecargar" title="Actualizar">↻</button>
         </div>
 
         <div class="card hero">
           <p class="eyebrow">Confirmar punto</p>
           <h1 id="clienteNombre">Cliente</h1>
-          <p id="heroMsg">Validación rápida para sumar una visita.</p>
+          <p id="heroMsg">Validación rápida de visita.</p>
           <div class="meta-row">
             <span class="tiny-pill" id="clienteId">ID: —</span>
             <span class="tiny-pill" id="clienteEstado">Estado: —</span>
@@ -382,8 +602,8 @@
         <div class="card">
           <div class="progress-head">
             <div>
-              <h2>Progreso actual</h2>
-              <p style="margin-top:6px; color: var(--muted); font-size: 13px;" id="faltanText">Te faltan puntos para la recompensa.</p>
+              <h2>Progreso</h2>
+              <p id="faltanText">Puntos pendientes.</p>
             </div>
             <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
           </div>
@@ -401,18 +621,18 @@
               <span class="info-value" id="premioEstado">Sin premio</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Usuario mostrador</span>
+              <span class="info-label">Mostrador</span>
               <span class="info-value" id="usuarioMostradorLabel">Caja 1</span>
             </div>
           </div>
 
           <div class="field">
-            <label for="usuarioInput">Etiqueta de caja o encargado</label>
+            <label for="usuarioInput">Caja o encargado</label>
             <input id="usuarioInput" type="text" value="Caja 1" placeholder="Caja 1" style="letter-spacing: normal; font-size: 15px;" />
           </div>
 
           <div class="field">
-            <label for="pinInput">PIN del negocio</label>
+            <label for="pinInput">PIN</label>
             <div class="pin-wrap">
               <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••" />
               <button class="ghost-btn" id="btnVerPin" type="button">Ver</button>
@@ -424,10 +644,10 @@
             <button class="primary-btn hidden" id="btnCanjear">Canjear recompensa</button>
           </div>
 
-          <div id="statusBox" class="status-box info status-hidden" style="margin-top:14px;"></div>
+          <div id="statusBox" class="status-box info status-hidden" style="margin-top:12px;"></div>
         </div>
 
-        <p class="center-note">Este enlace viene desde el QR del cliente. El punto solo se guarda si el PIN es válido.</p>
+        <p class="center-note">El punto solo se guarda con un PIN válido.</p>
       </div>
     </div>
   </div>
@@ -527,12 +747,12 @@
       document.getElementById('usuarioMostradorLabel').textContent = safeText(usuarioInput.value, 'Caja 1');
 
       document.getElementById('heroMsg').textContent = premioDisponible
-        ? `Este cliente ya tiene ${state.recompensa.toLowerCase()} disponible.`
-        : 'Ingresa el PIN del negocio para validar y sumar un punto.';
+        ? `${state.recompensa} disponible.`
+        : 'Ingresa el PIN para confirmar.';
 
       document.getElementById('faltanText').textContent = premioDisponible
-        ? 'Ya puede canjear su recompensa.'
-        : `Le faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'} para su recompensa.`;
+        ? 'Listo para canje.'
+        : `Faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'}.`;
 
       btnCanjear.classList.toggle('hidden', !premioDisponible);
       renderCups(points, state.metaPuntos);
@@ -545,28 +765,28 @@
     }
 
     async function apiPost(payload) {
-  const form = new URLSearchParams();
-  Object.keys(payload).forEach(key => {
-    form.append(key, payload[key] ?? '');
-  });
+      const form = new URLSearchParams();
+      Object.keys(payload).forEach(key => {
+        form.append(key, payload[key] ?? '');
+      });
 
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: form
-  });
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: form
+      });
 
-  return res.json();
-}
+      return res.json();
+    }
 
     async function loadClient() {
       state.id = qs('id');
 
       if (!state.id) {
         loadingView.innerHTML = `
-          <div>
-            <div style="font-size:34px; margin-bottom:12px;">⚠️</div>
-            <strong style="display:block; color: var(--text); font-size: 19px; letter-spacing:-0.04em;">QR inválido</strong>
-            <p style="margin-top:8px;">No se encontró el ID del cliente en el enlace.</p>
+          <div class="loading-card">
+            <div class="loading-icon">⚠️</div>
+            <strong>QR inválido</strong>
+            <p>No se encontró el ID del cliente.</p>
           </div>
         `;
         return;
@@ -587,7 +807,7 @@
         };
         renderCliente();
         showApp();
-        showStatus('Modo demo activo. Pega tu URL de Apps Script para guardar puntos reales.', 'info');
+        showStatus('Modo demo activo.', 'info');
         return;
       }
 
@@ -596,21 +816,21 @@
         if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
         state.cliente = data.cliente;
         state.metaPuntos = Number(
-  data.meta_puntos ||
-  data.metaPuntos ||
-  data.cliente?.meta_puntos ||
-  data.cliente?.metaPuntos ||
-  data.cliente?.meta ||
-  10
-);
+          data.meta_puntos ||
+          data.metaPuntos ||
+          data.cliente?.meta_puntos ||
+          data.cliente?.metaPuntos ||
+          data.cliente?.meta ||
+          10
+        );
         renderCliente();
         showApp();
       } catch (error) {
         loadingView.innerHTML = `
-          <div>
-            <div style="font-size:34px; margin-bottom:12px;">⚠️</div>
-            <strong style="display:block; color: var(--text); font-size: 19px; letter-spacing:-0.04em;">No se pudo cargar</strong>
-            <p style="margin-top:8px;">${error.message || 'Ocurrió un problema al leer el cliente.'}</p>
+          <div class="loading-card">
+            <div class="loading-icon">⚠️</div>
+            <strong>No se pudo cargar</strong>
+            <p>${error.message || 'Ocurrió un problema al leer el cliente.'}</p>
           </div>
         `;
       }
@@ -628,7 +848,7 @@
         state.cliente = data.cliente;
         renderCliente();
       } catch (error) {
-        showStatus(error.message || 'No se pudo actualizar la tarjeta.', 'error');
+        showStatus(error.message || 'No se pudo actualizar.', 'error');
       }
     }
 
@@ -639,7 +859,7 @@
       document.getElementById('usuarioMostradorLabel').textContent = usuario;
 
       if (!pin) {
-        showStatus('Ingresa el PIN del negocio para continuar.', 'error');
+        showStatus('Ingresa el PIN.', 'error');
         pinInput.focus();
         return;
       }
@@ -651,8 +871,8 @@
         renderCliente();
         pinInput.value = '';
         showStatus(state.cliente.premio_disponible === 'SI'
-          ? 'Modo demo: punto agregado. El cliente ya tiene recompensa disponible.'
-          : 'Modo demo: punto agregado correctamente.', 'ok');
+          ? 'Modo demo: recompensa disponible.'
+          : 'Modo demo: punto agregado.', 'ok');
         return;
       }
 
@@ -675,9 +895,9 @@
         };
         renderCliente();
         pinInput.value = '';
-        showStatus(data.message || 'Punto agregado correctamente.', 'ok');
+        showStatus(data.message || 'Punto agregado.', 'ok');
       } catch (error) {
-        showStatus(error.message || 'Ocurrió un error al confirmar el punto.', 'error');
+        showStatus(error.message || 'Error al confirmar.', 'error');
       } finally {
         btnConfirmar.disabled = false;
         btnConfirmar.textContent = 'Confirmar punto';
@@ -691,7 +911,7 @@
       document.getElementById('usuarioMostradorLabel').textContent = usuario;
 
       if (!pin) {
-        showStatus('Ingresa el PIN para canjear la recompensa.', 'error');
+        showStatus('Ingresa el PIN.', 'error');
         pinInput.focus();
         return;
       }
@@ -702,7 +922,7 @@
         state.cliente.ultima_visita = new Date().toISOString();
         renderCliente();
         pinInput.value = '';
-        showStatus('Modo demo: recompensa canjeada correctamente.', 'ok');
+        showStatus('Modo demo: recompensa canjeada.', 'ok');
         return;
       }
 
@@ -720,9 +940,9 @@
 
         await refreshClient();
         pinInput.value = '';
-        showStatus(data.message || 'Premio canjeado correctamente.', 'ok');
+        showStatus(data.message || 'Premio canjeado.', 'ok');
       } catch (error) {
-        showStatus(error.message || 'Ocurrió un error al canjear la recompensa.', 'error');
+        showStatus(error.message || 'Error al canjear.', 'error');
       } finally {
         btnCanjear.disabled = false;
         btnCanjear.textContent = 'Canjear recompensa';
