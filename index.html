@@ -1,23 +1,961 @@
-/* BOTÓN CANJEAR ACTIVO (premio disponible) */
-.btn-reward {
-  background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.28) !important;
-  animation: pulseReward 1.6s ease-in-out infinite;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#eef2f7" />
+  <meta name="color-scheme" content="light" />
+  <title>Validar puntos</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --bg-2: #f8fafc;
+      --card: rgba(255, 255, 255, 0.88);
+      --panel: rgba(255, 255, 255, 0.74);
+      --panel-solid: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148, 163, 184, 0.18);
+      --line-strong: rgba(148, 163, 184, 0.24);
+      --accent: #111827;
+      --accent-soft: #f1f5f9;
+      --success: #166534;
+      --danger: #b91c1c;
+      --shadow-phone: 0 24px 60px rgba(15, 23, 42, 0.16);
+      --shadow-card: 0 12px 30px rgba(15, 23, 42, 0.07);
+      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.05);
+      --radius-2xl: 30px;
+      --radius-xl: 24px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --maxw: 430px;
+    }
 
-/* PALPITEO SUTIL (no exagerado tipo Apple) */
-@keyframes pulseReward {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 10px 22px rgba(22, 163, 74, 0.35);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
-  }
-}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color-scheme: light;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      touch-action: manipulation;
+      overscroll-behavior: none;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 10px;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: transparent;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: var(--maxw);
+      height: 100%;
+    }
+
+    .phone {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-phone);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.08));
+      opacity: 0.9;
+    }
+
+    .screen,
+    .loading {
+      position: relative;
+      z-index: 1;
+      min-height: 100%;
+      height: 100%;
+    }
+
+    .screen {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 4px 2px 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      display: none;
+    }
+
+    .brand div:last-child {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 15px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-xl);
+      padding: 15px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .hero,
+    .card:nth-of-type(2),
+    .card:nth-of-type(3) {
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    .hero {
+      padding-bottom: 13px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.82)),
+        linear-gradient(135deg, rgba(241,245,249,0.75), rgba(255,255,255,0.15));
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 10px;
+      margin: 0 0 8px;
+      font-weight: 800;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .hero h1 {
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 6px;
+      color: #0b1220;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.38;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .tiny-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 29px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: #475569;
+      background: rgba(248, 250, 252, 0.95);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .progress-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-head h2 {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .big-points {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .big-points strong {
+      color: var(--text);
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    #faltanText {
+      margin-top: 0 !important;
+      color: var(--muted) !important;
+      font-size: 13px !important;
+      line-height: 1.35;
+    }
+
+    .cups {
+      display: none !important;
+    }
+
+    .cup,
+    .cup.filled {
+      display: none !important;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 0;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .info-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .info-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .info-value {
+      font-weight: 700;
+      text-align: right;
+      font-size: 13px;
+      max-width: 58%;
+      word-break: break-word;
+      color: #0f172a;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 13px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+    }
+
+    .pin-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid rgba(203, 213, 225, 0.95);
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 15px;
+      padding: 12px 13px;
+      font-size: 15px;
+      outline: none;
+      color: var(--text);
+      min-height: 44px;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    #pinInput {
+      letter-spacing: 0.18em;
+    }
+
+    .field input:focus {
+      border-color: rgba(148, 163, 184, 0.75);
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.13);
+      background: #fff;
+    }
+
+    .ghost-btn,
+    .primary-btn,
+    .secondary-btn {
+      width: 100%;
+      border: none;
+      border-radius: 15px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+      min-height: 44px;
+    }
+
+    .secondary-btn {
+      background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.16);
+    }
+
+    .primary-btn {
+      background: rgba(248, 250, 252, 0.95);
+      color: var(--text);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .ghost-btn {
+      width: auto;
+      min-width: 70px;
+      background: rgba(248, 250, 252, 0.96);
+      color: var(--text);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      padding-inline: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .ghost-btn:active,
+    .primary-btn:active,
+    .secondary-btn:active,
+    .icon-btn:active {
+      transform: scale(0.985);
+    }
+
+    .status-box {
+      border-radius: 15px;
+      padding: 11px 12px;
+      font-size: 13px;
+      line-height: 1.35;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .status-box.info {
+      background: rgba(248, 250, 252, 0.96);
+      color: var(--text);
+      border-color: rgba(226, 232, 240, 0.95);
+    }
+
+    .status-box.ok {
+      background: #f0fdf4;
+      color: var(--success);
+      border-color: #bbf7d0;
+    }
+
+    .status-box.error {
+      background: #fef2f2;
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .status-hidden { display: none; }
+    .hidden { display: none !important; }
+
+    .split-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px !important;
+    }
+
+    .center-note {
+      display: none;
+    }
+
+    .loading {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .loading strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: -0.04em;
+    }
+
+    .loading p {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+
+    /* BOTÓN CANJEAR ACTIVO (premio disponible) */
+    .btn-reward {
+      background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 18px rgba(22, 163, 74, 0.28) !important;
+      animation: pulseReward 1.6s ease-in-out infinite;
+    }
+
+    /* PALPITEO SUTIL */
+    @keyframes pulseReward {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 22px rgba(22, 163, 74, 0.35);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
+      }
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 6px; }
+      .screen,
+      .loading {
+        min-height: 100%;
+        height: 100%;
+      }
+      .screen { padding: 12px; gap: 8px; }
+      .card { padding: 13px; }
+      .hero h1 { font-size: 22px; }
+      .big-points strong { font-size: 30px; }
+      .field input,
+      .ghost-btn,
+      .primary-btn,
+      .secondary-btn { min-height: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="phone">
+      <div id="loadingView" class="loading">
+        <div>
+          <strong>Cargando</strong>
+          <p>Preparando datos del cliente.</p>
+        </div>
+      </div>
+
+      <div id="appView" class="screen hidden">
+        <div class="topbar">
+          <div class="brand">
+            <div class="brand-badge"></div>
+            <div id="negocioNombre">Panel de validación</div>
+          </div>
+          <button class="icon-btn" id="btnRecargar" title="Recargar">↻</button>
+        </div>
+
+        <div class="card hero">
+          <p class="eyebrow">Validación</p>
+          <h1 id="clienteNombre">Cliente</h1>
+          <p id="heroMsg">Listo para validar.</p>
+          <div class="meta-row">
+            <span class="tiny-pill" id="clienteId">ID: —</span>
+            <span class="tiny-pill" id="clienteEstado">Estado: —</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="progress-head">
+            <div>
+              <h2>Progreso</h2>
+              <p id="faltanText">Sin datos.</p>
+            </div>
+            <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
+          </div>
+          <div class="cups" id="cupsGrid"></div>
+        </div>
+
+        <div class="card">
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Última visita</span>
+              <span class="info-value" id="ultimaVisita">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Premio</span>
+              <span class="info-value" id="premioEstado">Sin premio</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pinInput">PIN</label>
+            <div class="pin-wrap">
+              <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••" />
+              <button class="ghost-btn" id="btnVerPin" type="button">Ver</button>
+            </div>
+          </div>
+
+          <div class="split-actions">
+            <button class="secondary-btn" id="btnConfirmar">Confirmar punto</button>
+            <button class="primary-btn hidden" id="btnCanjear">Canjear recompensa</button>
+          </div>
+
+          <div id="statusBox" class="status-box info status-hidden" style="margin-top:12px;"></div>
+        </div>
+
+        <p class="center-note">Validación rápida.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      PEGA AQUÍ TU URL DE APPS SCRIPT
+      Ejemplo: const API_URL = 'https://script.google.com/macros/s/XXXXXXXX/exec';
+    */
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
+    const DEFAULT_GOAL = 0;
+    const DEFAULT_REWARD = 'Recompensa';
+
+    const loadingView = document.getElementById('loadingView');
+    const appView = document.getElementById('appView');
+    const btnRecargar = document.getElementById('btnRecargar');
+    const btnVerPin = document.getElementById('btnVerPin');
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const btnCanjear = document.getElementById('btnCanjear');
+    const statusBox = document.getElementById('statusBox');
+    const pinInput = document.getElementById('pinInput');
+
+    const state = {
+      id: null,
+      cliente: null,
+      metaPuntos: DEFAULT_GOAL,
+      recompensa: DEFAULT_REWARD,
+      negocio: 'Panel de validación'
+    };
+
+    function qs(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    function safeText(value, fallback = '—') {
+      return value && String(value).trim() ? String(value).trim() : fallback;
+    }
+
+    function formatDate(value) {
+      if (!value) return 'Sin registro';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return safeText(value, 'Sin fecha');
+      return date.toLocaleString('es-GT', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function showStatus(message, type = 'info') {
+      statusBox.textContent = message;
+      statusBox.className = `status-box ${type}`;
+      statusBox.classList.remove('status-hidden');
+    }
+
+    function hideStatus() {
+      statusBox.className = 'status-box info status-hidden';
+      statusBox.textContent = '';
+    }
+
+    function showApp() {
+      loadingView.classList.add('hidden');
+      appView.classList.remove('hidden');
+    }
+
+    function applyServerData(data) {
+      state.metaPuntos = Number(
+        data?.meta_puntos ??
+        data?.metaPuntos ??
+        data?.cliente?.meta_puntos ??
+        data?.cliente?.metaPuntos ??
+        data?.cliente?.meta ??
+        state.metaPuntos ??
+        10
+      );
+
+      state.recompensa = String(
+        data?.recompensa ??
+        state.recompensa ??
+        DEFAULT_REWARD
+      ).trim();
+
+      state.negocio = String(
+        data?.nombre_negocio ??
+        state.negocio ??
+        'Panel de validación'
+      ).trim();
+    }
+
+    function renderCups(points, goal) {
+      const cupsGrid = document.getElementById('cupsGrid');
+      cupsGrid.innerHTML = '';
+      const total = Math.max(Number(goal) || 1, 1);
+      for (let i = 1; i <= total; i++) {
+        const item = document.createElement('div');
+        item.className = `cup ${i <= points ? 'filled' : ''}`;
+        item.textContent = '';
+        cupsGrid.appendChild(item);
+      }
+    }
+
+    function renderCliente() {
+      const c = state.cliente;
+      if (!c) return;
+
+      const points = Number(c.puntos || 0);
+      const premioDisponible = String(c.premio_disponible || 'NO').toUpperCase() === 'SI';
+      const faltan = Math.max(0, state.metaPuntos - points);
+
+      document.getElementById('negocioNombre').textContent = state.negocio;
+      document.getElementById('clienteNombre').textContent = safeText(c.nombre, 'Cliente');
+      document.getElementById('clienteId').textContent = `ID: ${safeText(c.id_cliente)}`;
+      document.getElementById('clienteEstado').textContent = `Estado: ${safeText(c.estado, 'ACTIVO')}`;
+      document.getElementById('pointsCount').textContent = points;
+      document.getElementById('goalCount').textContent = state.metaPuntos;
+      document.getElementById('ultimaVisita').textContent = formatDate(c.ultima_visita);
+      document.getElementById('premioEstado').textContent = premioDisponible ? `${state.recompensa} disponible` : 'Sin premio';
+
+      document.getElementById('heroMsg').textContent = premioDisponible
+        ? 'Recompensa disponible.'
+        : 'Ingresa PIN para validar.';
+
+      document.getElementById('faltanText').textContent = premioDisponible
+        ? 'Listo para canjear.'
+        : `Faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'}.`;
+
+      btnCanjear.classList.toggle('hidden', !premioDisponible);
+
+      if (premioDisponible) {
+        btnCanjear.classList.add('btn-reward');
+      } else {
+        btnCanjear.classList.remove('btn-reward');
+      }
+
+      renderCups(points, state.metaPuntos);
+    }
+
+    async function apiGet(params) {
+      const url = `${API_URL}?${new URLSearchParams(params).toString()}`;
+      const res = await fetch(url);
+      return res.json();
+    }
+
+    async function apiPost(payload) {
+      const form = new URLSearchParams();
+      Object.keys(payload).forEach(key => {
+        form.append(key, payload[key] ?? '');
+      });
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: form
+      });
+
+      return res.json();
+    }
+
+    async function loadClient() {
+      state.id = qs('id');
+
+      if (!state.id) {
+        loadingView.innerHTML = `
+          <div>
+            <strong>QR inválido</strong>
+            <p>No se encontró el ID del cliente.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente = {
+          id_cliente: state.id,
+          nombre: 'Ana López',
+          telefono: '5551234',
+          correo: 'ana@demo.com',
+          puntos: 4,
+          fecha_registro: new Date().toISOString(),
+          ultima_visita: new Date(Date.now() - 86400000).toISOString(),
+          premio_disponible: 'NO',
+          qr_id: state.id,
+          estado: 'ACTIVO'
+        };
+        state.metaPuntos = 5;
+        state.recompensa = 'Recompensa';
+        state.negocio = 'Panel de validación';
+        renderCliente();
+        showApp();
+        showStatus('Modo demo activo.', 'info');
+        return;
+      }
+
+      try {
+        const data = await apiGet({ action: 'getClient', id: state.id });
+        if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
+
+        state.cliente = data.cliente;
+        applyServerData(data);
+
+        renderCliente();
+        showApp();
+      } catch (error) {
+        loadingView.innerHTML = `
+          <div>
+            <strong>No se pudo cargar</strong>
+            <p>${error.message || 'Ocurrió un problema al leer el cliente.'}</p>
+          </div>
+        `;
+      }
+    }
+
+    async function refreshClient() {
+      hideStatus();
+
+      if (!state.id || API_URL.includes('PEGAR_AQUI')) {
+        renderCliente();
+        return;
+      }
+
+      try {
+        const data = await apiGet({ action: 'getClient', id: state.id });
+        if (!data.ok) throw new Error(data.message || 'No se pudo actualizar');
+
+        state.cliente = data.cliente;
+        applyServerData(data);
+
+        renderCliente();
+      } catch (error) {
+        showStatus(error.message || 'No se pudo actualizar.', 'error');
+      }
+    }
+
+    async function confirmPoint() {
+      hideStatus();
+      const pin = pinInput.value.trim();
+      const usuario = 'Caja 1';
+
+      if (!pin) {
+        showStatus('Ingresa el PIN.', 'error');
+        pinInput.focus();
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente.puntos = Number(state.cliente.puntos || 0) + 1;
+        if (state.cliente.puntos >= state.metaPuntos) state.cliente.premio_disponible = 'SI';
+        state.cliente.ultima_visita = new Date().toISOString();
+        renderCliente();
+        pinInput.value = '';
+        showStatus(
+          state.cliente.premio_disponible === 'SI'
+            ? 'Punto agregado. Recompensa disponible.'
+            : 'Punto agregado.',
+          'ok'
+        );
+        return;
+      }
+
+      try {
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = 'Guardando...';
+
+        const data = await apiPost({
+          action: 'confirmPoint',
+          id: state.id,
+          pin,
+          usuario
+        });
+
+        if (!data.ok) throw new Error(data.message || 'No se pudo confirmar el punto');
+
+        state.cliente = {
+          ...state.cliente,
+          ...data.cliente,
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
+        };
+        applyServerData(data);
+
+        renderCliente();
+        pinInput.value = '';
+        showStatus(data.message || 'Punto agregado.', 'ok');
+      } catch (error) {
+        showStatus(error.message || 'Ocurrió un error al confirmar el punto.', 'error');
+      } finally {
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = 'Confirmar punto';
+      }
+    }
+
+    async function redeemReward() {
+      hideStatus();
+      const pin = pinInput.value.trim();
+      const usuario = 'Caja 1';
+
+      if (!pin) {
+        showStatus('Ingresa el PIN.', 'error');
+        pinInput.focus();
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente.puntos = 0;
+        state.cliente.premio_disponible = 'NO';
+        state.cliente.ultima_visita = new Date().toISOString();
+        renderCliente();
+        btnCanjear.classList.remove('btn-reward');
+        pinInput.value = '';
+        showStatus('Recompensa canjeada.', 'ok');
+        return;
+      }
+
+      try {
+        btnCanjear.disabled = true;
+        btnCanjear.textContent = 'Canjeando...';
+
+        const data = await apiPost({
+          action: 'redeemReward',
+          id: state.id,
+          pin,
+          usuario
+        });
+
+        if (!data.ok) throw new Error(data.message || 'No se pudo canjear la recompensa');
+
+        state.cliente = {
+          ...state.cliente,
+          ...data.cliente,
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
+        };
+        applyServerData(data);
+
+        renderCliente();
+        btnCanjear.classList.remove('btn-reward');
+        pinInput.value = '';
+        showStatus(data.message || 'Recompensa canjeada.', 'ok');
+      } catch (error) {
+        showStatus(error.message || 'Ocurrió un error al canjear la recompensa.', 'error');
+      } finally {
+        btnCanjear.disabled = false;
+        btnCanjear.textContent = 'Canjear recompensa';
+      }
+    }
+
+    btnVerPin.addEventListener('click', () => {
+      const isPassword = pinInput.type === 'password';
+      pinInput.type = isPassword ? 'text' : 'password';
+      btnVerPin.textContent = isPassword ? 'Ocultar' : 'Ver';
+    });
+
+    btnRecargar.addEventListener('click', refreshClient);
+    btnConfirmar.addEventListener('click', confirmPoint);
+    btnCanjear.addEventListener('click', redeemReward);
+
+    document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', event => event.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', event => event.preventDefault(), { passive: false });
+
+    document.addEventListener('wheel', event => {
+      if (event.ctrlKey) event.preventDefault();
+    }, { passive: false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', event => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    loadClient();
+  </script>
+</body>
+</html>
